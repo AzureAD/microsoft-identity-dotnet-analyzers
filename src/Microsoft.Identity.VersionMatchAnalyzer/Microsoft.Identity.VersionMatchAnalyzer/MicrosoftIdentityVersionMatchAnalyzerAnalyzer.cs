@@ -15,7 +15,7 @@ namespace Microsoft.Identity.VersionMatchAnalyzer
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class MicrosoftIdentityVersionMatchAnalyzerAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "MicrosoftIdentityVersionMatchAnalyzer";
+        public const string DiagnosticId = "IdentityVersionMatchAnalyzer";
         public readonly List<string> WilsonAssemblyNames = new List<string>()
         {
             "Microsoft.IdentityModel.JsonWebTokens",
@@ -45,16 +45,16 @@ namespace Microsoft.Identity.VersionMatchAnalyzer
             "Microsoft.IdentityModel.S2S.Tokens"
         };
 
-        private static DiagnosticDescriptor AssembliesVersionMismatch { get; } =
+        private static DiagnosticDescriptor VersionMismatch { get; } =
        new DiagnosticDescriptor(
            DiagnosticId,
-           "Multiple versions of Microsoft.IdentityModel.* are referenced",
-           "The project '{0}' has Microsoft.IdentityModel.* references that differ in version number: {1}",
+           "Version mismatch detected among these references. They all need to be of same version",
+           "In project '{0}', Version mismatch detected among these references. They all need to be of same version {1}",
            category: "Maintainability",
            defaultSeverity: DiagnosticSeverity.Warning,
            isEnabledByDefault: true);
 
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(AssembliesVersionMismatch); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(VersionMismatch); } }
 
         public override void Initialize(AnalysisContext context)
         {
@@ -92,7 +92,7 @@ namespace Microsoft.Identity.VersionMatchAnalyzer
                 if (DetectVersionMismatch(foundWilsonAssemblies))
                     ctxt.ReportDiagnostic(
                             Diagnostic.Create(
-                                AssembliesVersionMismatch,
+                                VersionMismatch,
                                 null,
                                 compilation.AssemblyName,
                                 wilsonMessage
@@ -101,7 +101,7 @@ namespace Microsoft.Identity.VersionMatchAnalyzer
                 if (DetectVersionMismatch(foundSalAssemblies))
                     ctxt.ReportDiagnostic(
                             Diagnostic.Create(
-                                AssembliesVersionMismatch,
+                                VersionMismatch,
                                 null,
                                 compilation.AssemblyName,
                                 salMessage
